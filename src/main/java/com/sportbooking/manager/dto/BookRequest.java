@@ -1,9 +1,19 @@
 package com.sportbooking.manager.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+
 public class BookRequest {
 
+    @NotBlank(message = "Title is required")
     private String title;
+
+    @NotBlank(message = "Author is required")
     private String author;
+
+    @Min(value = 1400, message = "Year published must be greater than or equal to 1400")
+    @Max(value = 9999, message = "Year published must be less than 10000")
     private Integer yearPublished;
 
     public BookRequest() {
