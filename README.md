@@ -176,6 +176,11 @@ La aplicación incluye un health check que verifica el endpoint `/actuator/healt
 - Metrics: `http://localhost:8080/actuator/metrics`
 - Prometheus: `http://localhost:8080/actuator/prometheus` (solo en dev)
 
+## Swagger / OpenAPI
+
+La documentación interactiva de la API está disponible en `http://localhost:8080/swagger-ui/index.html`.
+Si necesitas el documento OpenAPI en formato JSON, puedes acceder a `http://localhost:8080/v3/api-docs`.
+
 ## Puertos
 
 - **Aplicación**: `8080`
