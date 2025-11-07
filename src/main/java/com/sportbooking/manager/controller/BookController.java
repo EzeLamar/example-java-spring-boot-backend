@@ -1,6 +1,7 @@
 package com.sportbooking.manager.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,5 +58,12 @@ public class BookController {
         Book deleted = bookService.deleteById(id);
 
         return ResponseEntity.ok().body(deleted);
+    }
+
+    @GetMapping("/ids")
+    public ResponseEntity<Map<Long, String>> getAllBookIdsAndTitles() {
+        Map<Long, String> idsAndTitles = bookService.findAllIdsAndTitles();
+
+        return ResponseEntity.ok().body(idsAndTitles);
     }
 }

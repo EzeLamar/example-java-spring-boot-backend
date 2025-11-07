@@ -1,7 +1,9 @@
 package com.sportbooking.manager.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -47,5 +49,10 @@ public class BookService {
         bookRepository.deleteById(id);
 
         return existingBook;
+    }
+
+    public Map<Long, String> findAllIdsAndTitles() {
+        return bookRepository.findAll().stream()
+            .collect(Collectors.toMap(Book::getId, Book::getTitle));
     }
 }
