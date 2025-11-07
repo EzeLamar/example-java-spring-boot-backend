@@ -1,0 +1,13 @@
+version: '3.8'
+
+# Docker Compose para producción
+# Uso: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  manager:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    # En producción, considera usar una imagen pre-construida en lugar de build
+    # image: your-registry/sport-booking-manager:latest
+    # build:  # Comentar build y descomentar image en producción
+

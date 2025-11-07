@@ -53,6 +53,11 @@ docker-compose down -v
 docker-compose up -d --build
 ```
 
+**Ejecutar en modo producción:**
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
 **Ver estado de los servicios:**
 ```bash
 docker-compose ps
@@ -111,16 +116,43 @@ docker image prune
 
 ## Configuración
 
+### Perfiles de Spring Boot
+
+El proyecto incluye dos perfiles configurados:
+
+- **dev**: Perfil de desarrollo con logging detallado y SQL visible
+- **prod**: Perfil de producción con configuración optimizada y seguridad mejorada
+
+El perfil por defecto es `dev`. Puedes cambiarlo con la variable de entorno `SPRING_PROFILES_ACTIVE`.
+
+**Ejecutar con perfil de producción:**
+```bash
+SPRING_PROFILES_ACTIVE=prod docker-compose up -d
+```
+
 ### Variables de Entorno
 
-El `docker-compose.yml` configura las siguientes variables de entorno por defecto:
+**Configurar mediante archivo .env (Recomendado):**
 
-- `SPRING_DATASOURCE_URL`: `jdbc:postgresql://postgres:5432/sportbooking`
-- `SPRING_DATASOURCE_USERNAME`: `postgres`
-- `SPRING_DATASOURCE_PASSWORD`: `postgres`
-- `SPRING_JPA_HIBERNATE_DDL_AUTO`: `validate`
+1. Copia el archivo de ejemplo:
+```bash
+cp env.example .env
+```
 
-Puedes modificar estas variables en el archivo `docker-compose.yml` o crear un archivo `.env` en la raíz del proyecto.
+2. Edita `.env` con tus valores:
+```bash
+SPRING_PROFILES_ACTIVE=dev
+SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sportbooking
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=postgres
+POSTGRES_DB=sportbooking
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+```
+
+El `docker-compose.yml` lee automáticamente el archivo `.env` si existe. Si no existe, usa valores por defecto.
+
+**⚠️ Importante:** Agrega `.env` a tu `.gitignore` para no commitear credenciales.
 
 ### Base de Datos
 
@@ -131,14 +163,18 @@ PostgreSQL se ejecuta en el puerto `5432` y los datos se persisten en un volumen
 docker exec -it sport-booking-postgres psql -U postgres -d sportbooking
 ```
 
-## Health Check
+## Health Check y Actuator
 
-La aplicación incluye un health check que verifica el endpoint `/actuator/health`. Asegúrate de que el Actuator esté habilitado en tu `application.properties`:
+La aplicación incluye un health check que verifica el endpoint `/actuator/health`. Los endpoints del Actuator están configurados en los perfiles:
 
-```properties
-management.endpoints.web.exposure.include=health
-management.endpoint.health.show-details=always
-```
+- **dev**: Expone `health`, `info`, `metrics`, `prometheus`
+- **prod**: Expone solo `health`, `info`, `metrics`
+
+**Endpoints disponibles:**
+- Health: `http://localhost:8080/actuator/health`
+- Info: `http://localhost:8080/actuator/info`
+- Metrics: `http://localhost:8080/actuator/metrics`
+- Prometheus: `http://localhost:8080/actuator/prometheus` (solo en dev)
 
 ## Puertos
 
@@ -153,10 +189,15 @@ manager/
 │   ├── main/
 │   │   ├── java/
 │   │   └── resources/
+│   │       ├── application.properties
+│   │       ├── application-dev.properties
+│   │       └── application-prod.properties
 │   └── test/
 ├── Dockerfile
 ├── docker-compose.yml
+├── docker-compose.prod.yml
 ├── .dockerignore
+├── env.example
 └── pom.xml
 ```
 
