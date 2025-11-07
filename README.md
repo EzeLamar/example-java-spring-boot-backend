@@ -1,86 +1,86 @@
-# Sport Booking Manager
+# Example Java With Spring Boot REST API
 
-Aplicación Spring Boot para la gestión de reservas deportivas.
+A simple REST API for managing book records with Spring Boot, providing endpoints for CRUD operations.
 
-## Requisitos
+## Requirements
 
 - Java 17
 - Maven 3.9+
-- Docker y Docker Compose (para ejecutar con Docker)
+- Docker and Docker Compose (to run with Docker)
 
-## Ejecución Local (sin Docker)
+## Local Execution (without Docker)
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-La aplicación estará disponible en `http://localhost:8080`
+The application will be available at `http://localhost:8080`
 
-## Dockerización
+## Dockerization
 
-Este proyecto está dockerizado y puede ejecutarse completamente con Docker Compose.
+This project is dockerized and can be run entirely with Docker Compose.
 
-### Construcción y Ejecución con Docker Compose (Recomendado)
+### Build and Run with Docker Compose (Recommended)
 
-**Iniciar todos los servicios (aplicación + PostgreSQL):**
+**Start all services (application + PostgreSQL):**
 ```bash
 docker-compose up -d
 ```
 
-**Ver logs de los servicios:**
+**View individual service logs:**
 ```bash
 docker-compose logs -f manager
 docker-compose logs -f postgres
 ```
 
-**Ver logs de todos los servicios:**
+**View logs for every service:**
 ```bash
 docker-compose logs -f
 ```
 
-**Detener todos los servicios:**
+**Stop every service:**
 ```bash
 docker-compose down
 ```
 
-**Detener y eliminar volúmenes (⚠️ elimina la base de datos):**
+**Stop and remove volumes (⚠️ removes the database):**
 ```bash
 docker-compose down -v
 ```
 
-**Reconstruir la imagen y reiniciar:**
+**Rebuild the image and restart:**
 ```bash
 docker-compose up -d --build
 ```
 
-**Ejecutar en modo producción:**
+**Run in production mode:**
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-**Ver estado de los servicios:**
+**Check service status:**
 ```bash
 docker-compose ps
 ```
 
-### Comandos Docker Individuales
+### Individual Docker Commands
 
-**Construir la imagen:**
+**Build the image:**
 ```bash
 docker build -t sport-booking-manager .
 ```
 
-**Ejecutar el contenedor (sin base de datos):**
+**Run the container (without a database):**
 ```bash
 docker run -p 8080:8080 sport-booking-manager
 ```
 
-**Ejecutar en modo interactivo:**
+**Run in interactive mode:**
 ```bash
 docker run -it -p 8080:8080 sport-booking-manager
 ```
 
-**Ejecutar con variables de entorno:**
+**Run with environment variables:**
 ```bash
 docker run -p 8080:8080 \
   -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/sportbooking \
@@ -89,57 +89,57 @@ docker run -p 8080:8080 \
   sport-booking-manager
 ```
 
-**Ver logs del contenedor:**
+**View container logs:**
 ```bash
 docker logs -f <container-id>
 ```
 
-**Ejecutar comandos dentro del contenedor:**
+**Run commands inside the container:**
 ```bash
 docker exec -it <container-id> sh
 ```
 
-**Eliminar la imagen:**
+**Remove the image:**
 ```bash
 docker rmi sport-booking-manager
 ```
 
-**Limpiar contenedores detenidos:**
+**Prune stopped containers:**
 ```bash
 docker container prune
 ```
 
-**Limpiar imágenes no utilizadas:**
+**Prune unused images:**
 ```bash
 docker image prune
 ```
 
-## Configuración
+## Configuration
 
-### Perfiles de Spring Boot
+### Spring Boot Profiles
 
-El proyecto incluye dos perfiles configurados:
+The project includes two configured profiles:
 
-- **dev**: Perfil de desarrollo con logging detallado y SQL visible
-- **prod**: Perfil de producción con configuración optimizada y seguridad mejorada
+- **dev**: Development profile with detailed logging and visible SQL
+- **prod**: Production profile with optimized configuration and enhanced security
 
-El perfil por defecto es `dev`. Puedes cambiarlo con la variable de entorno `SPRING_PROFILES_ACTIVE`.
+The default profile is `dev`. You can change it with the `SPRING_PROFILES_ACTIVE` environment variable.
 
-**Ejecutar con perfil de producción:**
+**Run with the production profile:**
 ```bash
 SPRING_PROFILES_ACTIVE=prod docker-compose up -d
 ```
 
-### Variables de Entorno
+### Environment Variables
 
-**Configurar mediante archivo .env (Recomendado):**
+**Configure via a .env file (Recommended):**
 
-1. Copia el archivo de ejemplo:
+1. Copy the sample file:
 ```bash
 cp env.example .env
 ```
 
-2. Edita `.env` con tus valores:
+2. Edit `.env` with your values:
 ```bash
 SPRING_PROFILES_ACTIVE=dev
 SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sportbooking
@@ -150,43 +150,43 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 ```
 
-El `docker-compose.yml` lee automáticamente el archivo `.env` si existe. Si no existe, usa valores por defecto.
+`docker-compose.yml` automatically reads the `.env` file if it exists. If it does not, it falls back to default values.
 
-**⚠️ Importante:** Agrega `.env` a tu `.gitignore` para no commitear credenciales.
+**⚠️ Important:** Add `.env` to `.gitignore` to avoid committing credentials.
 
-### Base de Datos
+### Database
 
-PostgreSQL se ejecuta en el puerto `5432` y los datos se persisten en un volumen de Docker llamado `postgres_data`.
+PostgreSQL runs on port `5432`, and data is persisted in a Docker volume named `postgres_data`.
 
-**Conectarse a la base de datos desde el host:**
+**Connect to the database from the host:**
 ```bash
 docker exec -it sport-booking-postgres psql -U postgres -d sportbooking
 ```
 
-## Health Check y Actuator
+## Health Check and Actuator
 
-La aplicación incluye un health check que verifica el endpoint `/actuator/health`. Los endpoints del Actuator están configurados en los perfiles:
+The application includes a health check that hits the `/actuator/health` endpoint. Actuator endpoints are configured per profile:
 
-- **dev**: Expone `health`, `info`, `metrics`, `prometheus`
-- **prod**: Expone solo `health`, `info`, `metrics`
+- **dev**: Exposes `health`, `info`, `metrics`, `prometheus`
+- **prod**: Exposes `health`, `info`, `metrics`
 
-**Endpoints disponibles:**
+**Available endpoints:**
 - Health: `http://localhost:8080/actuator/health`
 - Info: `http://localhost:8080/actuator/info`
 - Metrics: `http://localhost:8080/actuator/metrics`
-- Prometheus: `http://localhost:8080/actuator/prometheus` (solo en dev)
+- Prometheus: `http://localhost:8080/actuator/prometheus` (dev only)
 
 ## Swagger / OpenAPI
 
-La documentación interactiva de la API está disponible en `http://localhost:8080/swagger-ui/index.html`.
-Si necesitas el documento OpenAPI en formato JSON, puedes acceder a `http://localhost:8080/v3/api-docs`.
+Interactive API documentation is available at `http://localhost:8080/swagger-ui/index.html`.
+Access the OpenAPI JSON specification at `http://localhost:8080/v3/api-docs`.
 
-## Puertos
+## Ports
 
-- **Aplicación**: `8080`
+- **Application**: `8080`
 - **PostgreSQL**: `5432`
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 manager/
@@ -208,24 +208,24 @@ manager/
 
 ## Troubleshooting
 
-**El contenedor no inicia:**
+**Container does not start:**
 ```bash
 docker-compose logs manager
 ```
 
-**La aplicación no se conecta a la base de datos:**
-- Verifica que PostgreSQL esté corriendo: `docker-compose ps`
-- Verifica los logs de PostgreSQL: `docker-compose logs postgres`
-- Asegúrate de que las variables de entorno sean correctas
+**Application cannot connect to the database:**
+- Check that PostgreSQL is running: `docker-compose ps`
+- Inspect PostgreSQL logs: `docker-compose logs postgres`
+- Confirm environment variables are correct
 
-**Reconstruir desde cero:**
+**Rebuild from scratch:**
 ```bash
 docker-compose down -v
 docker-compose build --no-cache
 docker-compose up -d
 ```
 
-## Desarrollo
+## Development
 
-Para desarrollo local sin Docker, asegúrate de tener PostgreSQL corriendo y configura las propiedades en `application.properties` o mediante variables de entorno.
+For local development without Docker, ensure PostgreSQL is running and configure the properties in `application.properties` or via environment variables.
 
